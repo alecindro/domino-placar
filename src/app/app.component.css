@@ -1,0 +1,22 @@
+.container { max-width: 600px; margin: 0 auto; padding: 16px; font-family: sans-serif; }
+h1 { text-align: center; color: #1e293b; }
+.card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; }
+.grid-duplas { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+input, select { width: 100%; padding: 10px; margin-top: 6px; margin-bottom: 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+button { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 8px; }
+.btn-primary { background: #2563eb; color: white; }
+.btn-whatsapp { background: #25D366; color: white; }
+.btn-secondary { background: #64748b; color: white; }
+.placar-box { text-align: center; background: #f8fafc; }
+.badge-alvo { display: inline-block; background: #e2e8f0; padding: 4px 12px; border-radius: 16px; font-size: 12px; font-weight: bold; margin-bottom: 12px; }
+.placar-geral { display: flex; justify-content: space-around; align-items: center; }
+.time { flex: 1; padding: 10px; border-radius: 8px; }
+.time.vencedor { background: #dcfce7; border: 2px solid #22c55e; }
+.pontos { font-size: 48px; font-weight: bold; color: #0f172a; margin: 8px 0; }
+.vs { font-weight: bold; color: #94a3b8; font-size: 20px; }
+.trofeu { color: #15803d; font-weight: bold; font-size: 12px; }
+.turno-atual { margin-top: 16px; padding: 10px; background: #eff6ff; border-radius: 8px; color: #1d4ed8; }
+.inputs-rodada { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+th, td { padding: 8px; border-bottom: 1px solid #e2e8f0; text-align: center; }
+.btn-warning { background: #f59e0b; color: white; }

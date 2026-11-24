@@ -1,0 +1,149 @@
+<div class="container">
+  <h1>🀄 Placar de Dominó</h1>
+
+  <!-- TELA 1: CONFIGURAÇÃO DA PARTIDA -->
+  <div *ngIf="!partida" class="card">
+    <h2>Nova Partida</h2>
+
+    <div class="grid-duplas">
+      <div class="grupo-dupla">
+        <h3>Dupla 1</h3>
+        <input type="text" [(ngModel)]="nomesJogadores[0]" placeholder="Jogador 1" />
+        <input type="text" [(ngModel)]="nomesJogadores[2]" placeholder="Jogador 3 (Parceiro)" />
+      </div>
+
+      <div class="grupo-dupla">
+        <h3>Dupla 2</h3>
+        <input type="text" [(ngModel)]="nomesJogadores[1]" placeholder="Jogador 2" />
+        <input type="text" [(ngModel)]="nomesJogadores[3]" placeholder="Jogador 4 (Parceiro)" />
+      </div>
+    </div>
+
+    <div class="config-extra">
+      <label>
+        Pontuação para vencer:
+        <input type="number" [(ngModel)]="pontuacaoAlvo" min="10" step="10" />
+      </label>
+
+      <label>
+        Quem começa saindo?
+        <select [(ngModel)]="jogadorInicialIndex">
+          <option [value]="0">{{ nomesJogadores[0] || 'Jogador 1' }} (Dupla 1)</option>
+          <option [value]="1">{{ nomesJogadores[1] || 'Jogador 2' }} (Dupla 2)</option>
+          <option [value]="2">{{ nomesJogadores[2] || 'Jogador 3' }} (Dupla 1)</option>
+          <option [value]="3">{{ nomesJogadores[3] || 'Jogador 4' }} (Dupla 2)</option>
+        </select>
+      </label>
+    </div>
+
+    <button class="btn-primary" (click)="iniciarPartida()">Iniciar Partida</button>
+  </div>
+
+  <!-- HISTÓRICO DE PARTIDAS SALVAS (EXIBIDO NA TELA INICIAL) -->
+<div *ngIf="!partida && historicoPartidas.length > 0" class="card">
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <h3>📜 Partidas Anteriores</h3>
+    <button (click)="limparHistorico()" style="width: auto; padding: 6px 12px; font-size: 12px; background: #ef4444; color: white;">
+      Limpar
+    </button>
+  </div>
+
+  <div *ngFor="let item of historicoPartidas" style="border-bottom: 1px solid #e2e8f0; padding: 10px 0;">
+    <small style="color: #64748b;">{{ item.data }} • Alvo: {{ item.pontuacaoAlvo }} pts</small>
+    <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+      <span [style.fontWeight]="item.duplaVencedora === 1 ? 'bold' : 'normal'">
+        {{ item.duplaVencedora === 1 ? '🏆 ' : '' }}{{ item.dupla1Nome }} ({{ item.pontosDupla1 }})
+      </span>
+      <span>vs</span>
+      <span [style.fontWeight]="item.duplaVencedora === 2 ? 'bold' : 'normal'">
+        {{ item.duplaVencedora === 2 ? '🏆 ' : '' }}{{ item.dupla2Nome }} ({{ item.pontosDupla2 }})
+      </span>
+    </div>
+  </div>
+</div>
+
+  <!-- TELA 2: PARTIDA EM ANDAMENTO OU FINALIZADA -->
+  <div *ngIf="partida">
+    <!-- ÁREA CAPTURADA PARA IMAGEM DO WHATSAPP -->
+    <div #cardResultado class="card placar-box">
+      <div class="badge-alvo">Alvo: {{ partida.pontuacaoAlvo }} pts</div>
+
+      <div class="placar-geral">
+        <div class="time" [class.vencedor]="partida.duplaVencedora === 1">
+          <h3>{{ partida.dupla1Nome }}</h3>
+          <div class="pontos">{{ partida.pontosDupla1 }}</div>
+          <span *ngIf="partida.duplaVencedora === 1" class="trofeu">🏆 VENCEDORES</span>
+        </div>
+
+        <div class="vs">X</div>
+
+        <div class="time" [class.vencedor]="partida.duplaVencedora === 2">
+          <h3>{{ partida.dupla2Nome }}</h3>
+          <div class="pontos">{{ partida.pontosDupla2 }}</div>
+          <span *ngIf="partida.duplaVencedora === 2" class="trofeu">🏆 VENCEDORES</span>
+        </div>
+      </div>
+
+      <div *ngIf="!partida.finalizada" class="turno-atual">
+        🎲 Saída atual: <strong>{{ partida.jogadores[partida.jogadorAtualIndex].nome }}</strong>
+      </div>
+    </div>
+
+    <!-- CONTROLE DE PONTOS (ENQUANTO NÃO ACABAR) -->
+    <div *ngIf="!partida.finalizada" class="card">
+      <h3>Adicionar Pontos da Rodada</h3>
+      <div class="inputs-rodada">
+        <div>
+          <label>{{ partida.dupla1Nome }}</label>
+          <input type="number" [(ngModel)]="pontosRodadaDupla1" placeholder="0" min="0" />
+        </div>
+        <div>
+          <label>{{ partida.dupla2Nome }}</label>
+          <input type="number" [(ngModel)]="pontosRodadaDupla2" placeholder="0" min="0" />
+        </div>
+      </div>
+      <button 
+  *ngIf="partida.rodadas.length > 0" 
+  class="btn-warning" 
+  (click)="desfazerUltimaRodada()">
+  ↩️ Desfazer Última Rodada
+</button>
+      <button class="btn-primary" (click)="registrarRodada()">Confirmar Rodada</button>
+    </div>
+
+    <!-- AÇÕES DE FIM DE JOGO -->
+    <div *ngIf="partida.finalizada" class="card acoes-fim">
+      <h2>🎉 Partida Finalizada!</h2>
+      <button class="btn-warning" (click)="desfazerUltimaRodada()">
+  ↩️ Corrigir Última Jogada
+</button>
+      <button class="btn-whatsapp" (click)="compartilharWhatsApp()">
+        📲 Compartilhar Imagem no WhatsApp
+      </button>
+      <button class="btn-secondary" (click)="novaPartida()">Nova Partida</button>
+    </div>
+
+    <!-- HISTÓRICO DE RODADAS -->
+    <div *ngIf="partida.rodadas.length > 0" class="card">
+      <h3>Histórico de Rodadas</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Saída</th>
+            <th>Dupla 1</th>
+            <th>Dupla 2</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of partida.rodadas">
+            <td>{{ r.numero }}</td>
+            <td>{{ r.jogadorQueSaiu }}</td>
+            <td>+{{ r.pontosDupla1 }}</td>
+            <td>+{{ r.pontosDupla2 }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

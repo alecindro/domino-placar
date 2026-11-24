@@ -1,12 +1,14 @@
 {
   "name": "domino-placar",
   "version": "0.0.0",
+  "main": "main.js",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "electron": "ng build --base-href ./ && electron ."
   },
   "private": true,
   "packageManager": "npm@11.20.0",
@@ -17,6 +19,11 @@
     "@angular/forms": "^22.3.0",
     "@angular/platform-browser": "^22.3.0",
     "@angular/router": "^22.3.0",
+    "@capacitor/cli": "^8.6.2",
+    "@capacitor/core": "^8.6.2",
+    "@capacitor/filesystem": "^8.1.5",
+    "@capacitor/share": "^8.0.3",
+    "html-to-image": "^1.11.13",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
@@ -24,9 +31,12 @@
     "@angular/build": "^22.3.0",
     "@angular/cli": "^22.3.0",
     "@angular/compiler-cli": "^22.3.0",
+    "electron": "^45.4.1",
     "jsdom": "^31.0.0",
     "prettier": "^3.8.1",
     "typescript": "~6.0.2",
     "vitest": "^5.0.0"
   }
+
+
 }
