@@ -14,6 +14,8 @@ export interface Rodada {
 export interface Partida {
   id: string;
   data: string;
+  dupla1Numero?: string;
+  dupla2Numero?: string;
   dupla1Nome: string;
   dupla2Nome: string;
   jogadores: Jogador[];

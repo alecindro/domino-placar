@@ -17,11 +17,19 @@ import { StorageService } from './storage.service';
 })
 export class AppComponent implements OnInit {
   @ViewChild('cardResultado') cardResultado!: ElementRef;
-
+ // Configuração Inicial
   nomesJogadores = ['Jogador 1', 'Jogador 2', 'Jogador 3', 'Jogador 4'];
+  numeroDupla1?:string;
+  numeroDupla2?:string;
   pontuacaoAlvo = 100;
   jogadorInicialIndex = 0;
 
+    // Controles de Interface (Modais)
+  mostrarModalSaida = false;
+  mostrarHistorico = false;
+  mostrarModalCancelar = false;
+
+   // Estado da Partida
   partida: Partida | null = null;
   historicoPartidas: Partida[] = [];
   pontosRodadaDupla1: number | null = null;
@@ -35,19 +43,35 @@ export class AppComponent implements OnInit {
     this.historicoPartidas = this.storage.carregarHistorico();
   }
 
-  iniciarPartida() {
+  abrirModalSaida() {
+    this.jogadorInicialIndex = 0;
+    this.mostrarModalSaida = true;
+  }
+
+  fecharModalSaida() {
+    this.mostrarModalSaida = false;
+  }
+
+   fecharHistorico() {
+    this.mostrarHistorico = false;
+  }
+
+  confirmarInicioPartida() {
     const jogadores: Jogador[] = [
       { id: 0, nome: this.nomesJogadores[0] || 'Jogador 1', dupla: 1 },
       { id: 1, nome: this.nomesJogadores[1] || 'Jogador 2', dupla: 2 },
       { id: 2, nome: this.nomesJogadores[2] || 'Jogador 3', dupla: 1 },
       { id: 3, nome: this.nomesJogadores[3] || 'Jogador 4', dupla: 2 },
     ];
-
+ const num1 =  this.numeroDupla1 ? this.numeroDupla1.trim() : undefined;
+    const num2 = this.numeroDupla2 ? this.numeroDupla2.trim() : undefined;
     this.partida = {
       id: Date.now().toString(),
       data: new Date().toLocaleDateString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-      dupla1Nome: `${jogadores[0].nome} & ${jogadores[1].nome}`,
-      dupla2Nome: `${jogadores[2].nome} & ${jogadores[3].nome}`,
+        dupla1Numero: num1,
+      dupla2Numero: num2,
+      dupla1Nome: `${jogadores[0].nome} & ${jogadores[2].nome}`,
+      dupla2Nome: `${jogadores[1].nome} & ${jogadores[3].nome}`,
       jogadores,
       pontuacaoAlvo: this.pontuacaoAlvo > 0 ? this.pontuacaoAlvo : 100,
       pontosDupla1: 0,
@@ -56,7 +80,7 @@ export class AppComponent implements OnInit {
       rodadas: [],
       finalizada: false
     };
-
+this.mostrarModalSaida = false;
     this.storage.salvarPartidaAtual(this.partida);
   }
 
@@ -137,15 +161,41 @@ export class AppComponent implements OnInit {
     this.storage.salvarPartidaAtual(this.partida);
   }
 
+  abrirModalCancelar() {
+    this.mostrarModalCancelar = true;
+  }
 
-  async compartilharWhatsApp() {
-    if (!this.cardResultado) return;
+  fecharModalCancelar() {
+    this.mostrarModalCancelar = false;
+  }
+
+  confirmarCancelamentoPartida() {
+    this.partida = null;
+    this.pontosRodadaDupla1 = null;
+    this.pontosRodadaDupla2 = null;
+    this.mostrarModalCancelar = false;
+    this.storage.salvarPartidaAtual(null);
+  }
+
+    async compartilharWhatsApp() {
+    if (!this.cardResultado || !this.partida) return;
+
+    const vencedor = this.partida.duplaVencedora === 1 
+      ? `Dupla #${this.partida.dupla1Numero} (${this.partida.dupla1Nome})`
+      : `Dupla #${this.partida.dupla2Numero} (${this.partida.dupla2Nome})`;
+
+    const textoResumo = 
+      `🀄 *Fim de Jogo - Placar de Dominó*\n\n` +
+      `🏆 *Vencedores:* ${vencedor}\n\n` +
+      `📊 *Placar Final (Alvo: ${this.partida.pontuacaoAlvo} pts):*\n` +
+      `• Dupla #${this.partida.dupla1Numero} (${this.partida.dupla1Nome}): *${this.partida.pontosDupla1} pts*\n` +
+      `• Dupla #${this.partida.dupla2Numero} (${this.partida.dupla2Nome}): *${this.partida.pontosDupla2} pts*`;
 
     try {
       const blob = await toBlob(this.cardResultado.nativeElement, { backgroundColor: '#ffffff' });
       if (!blob) return;
 
-      // Se estiver rodando no Android ou iOS via Capacitor
+      // 1. Aplicativo Nativo (Android / iOS via Capacitor)
       if (Capacitor.isNativePlatform()) {
         const base64Data = await this.blobToBase64(blob);
         const fileName = `domino-resultado-${Date.now()}.png`;
@@ -158,33 +208,39 @@ export class AppComponent implements OnInit {
 
         await Share.share({
           title: 'Resultado da Partida de Dominó',
-          text: `Fim de jogo! Confira o placar de ${this.partida?.dupla1Nome} vs ${this.partida?.dupla2Nome}.`,
+          text: textoResumo,
           url: savedFile.uri,
           dialogTitle: 'Compartilhar no WhatsApp'
         });
-      } else {
-        // Fallback para Web / Electron (Desktop)
-        const file = new File([blob], 'placar-domino.png', { type: 'image/png' });
-        if (navigator.share && navigator.canShare({ files: [file] })) {
-          await navigator.share({
-            files: [file],
-            title: 'Placar Dominó',
-            text: 'Confira o resultado da nossa partida!'
-          });
-        } else {
-          // Baixa a imagem automaticamente caso o navegador/Electron não suporte Web Share de arquivos
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = 'placar-domino.png';
-          a.click();
-          alert('Imagem salva! Agora você pode anexá-la no WhatsApp Web/Desktop.');
-        }
+        return;
       }
+
+      // 2. Navegador Mobile com HTTPS (Abre o seletor nativo com a imagem anexada)
+      const file = new File([blob], 'placar-domino.png', { type: 'image/png' });
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: 'Placar Dominó',
+          text: textoResumo
+        });
+        return;
+      }
+
+      // 3. Fallback (Acesso via HTTP sem SSL ou Desktop): baixa a imagem e abre o WhatsApp
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'placar-domino.png';
+      a.click();
+
+      const whatsappUrl = `https://whatsapp.com{encodeURIComponent(textoResumo)}`;
+      window.open(whatsappUrl, '_blank');
+
     } catch (error) {
-      console.error('Erro ao gerar/compartilhar imagem:', error);
+      console.error('Erro ao compartilhar:', error);
     }
   }
+
 
   private blobToBase64(blob: Blob): Promise<string> {
     return new Promise((resolve, reject) => {

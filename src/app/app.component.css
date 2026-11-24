@@ -1,22 +1,181 @@
 .container { max-width: 600px; margin: 0 auto; padding: 16px; font-family: sans-serif; }
-h1 { text-align: center; color: #1e293b; }
+.topo { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+h1 { margin: 0; font-size: 22px; color: #1e293b; }
+
+.btn-historico { width: auto; padding: 8px 14px; font-size: 14px; background: #0f172a; color: #fff; margin: 0; }
 .card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; }
+
 .grid-duplas { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-input, select { width: 100%; padding: 10px; margin-top: 6px; margin-bottom: 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+.grupo-dupla h3 { margin-bottom: 2px; }
+.numero-dupla { display: inline-block; font-size: 12px; font-weight: bold; color: #2563eb; background: #eff6ff; padding: 2px 8px; border-radius: 6px; margin-bottom: 10px; }
+
+input[type="text"], input[type="number"] { width: 100%; padding: 10px; margin-top: 6px; margin-bottom: 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
 button { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 8px; }
+
 .btn-primary { background: #2563eb; color: white; }
 .btn-whatsapp { background: #25D366; color: white; }
 .btn-secondary { background: #64748b; color: white; }
+.btn-warning { background: #f59e0b; color: white; }
+.btn-danger { background: #ef4444; color: white; }
+
+/* Placar */
 .placar-box { text-align: center; background: #f8fafc; }
 .badge-alvo { display: inline-block; background: #e2e8f0; padding: 4px 12px; border-radius: 16px; font-size: 12px; font-weight: bold; margin-bottom: 12px; }
 .placar-geral { display: flex; justify-content: space-around; align-items: center; }
 .time { flex: 1; padding: 10px; border-radius: 8px; }
+.time h3 { margin: 4px 0; font-size: 16px; }
 .time.vencedor { background: #dcfce7; border: 2px solid #22c55e; }
 .pontos { font-size: 48px; font-weight: bold; color: #0f172a; margin: 8px 0; }
 .vs { font-weight: bold; color: #94a3b8; font-size: 20px; }
 .trofeu { color: #15803d; font-weight: bold; font-size: 12px; }
 .turno-atual { margin-top: 16px; padding: 10px; background: #eff6ff; border-radius: 8px; color: #1d4ed8; }
 .inputs-rodada { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
 table { width: 100%; border-collapse: collapse; margin-top: 10px; }
 th, td { padding: 8px; border-bottom: 1px solid #e2e8f0; text-align: center; }
-.btn-warning { background: #f59e0b; color: white; }
+
+/* Modais */
+.modal-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.65); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 16px; box-sizing: border-box; }
+.modal-box { background: #fff; border-radius: 12px; padding: 20px; width: 100%; max-width: 440px; max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.modal-header h3 { margin: 0; }
+.btn-fechar { width: auto; padding: 4px 10px; margin: 0; background: #e2e8f0; color: #334155; font-size: 14px; }
+.modal-sub { color: #64748b; font-size: 14px; margin-top: 0; }
+
+.opcoes-saida { display: flex; flex-direction: column; gap: 8px; margin: 16px 0; }
+.opcao-radio { display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer; }
+.opcao-radio.selecionado { border-color: #2563eb; background: #eff6ff; }
+.opcao-radio input { width: auto; margin: 0; }
+
+.modal-acoes { display: flex; gap: 10px; margin-top: 16px; }
+.modal-acoes button { margin-top: 0; }
+
+/* Histórico */
+.vazio { text-align: center; color: #64748b; padding: 24px 0; }
+.item-historico { border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-bottom: 10px; background: #f8fafc; }
+.hist-topo { display: flex; justify-content: space-between; font-size: 12px; color: #64748b; margin-bottom: 8px; }
+.hist-placar { display: flex; justify-content: space-between; align-items: center; text-align: center; }
+.hist-time { flex: 1; font-size: 14px; }
+.hist-time small { display: block; color: #2563eb; font-weight: bold; font-size: 11px; }
+.vencedor-texto { color: #15803d; font-weight: bold; }
+.hist-vs { font-weight: bold; color: #94a3b8; padding: 0 8px; }
+
+.input-numero-dupla {
+  background-color: #eff6ff !important;
+  border-color: #93c5fd !important;
+  color: #1e3a8a;
+  font-weight: bold;
+}
+.area-cancelar {
+  display: flex;
+  justify-content: center;
+  margin-top: 14px;
+}
+
+.btn-cancelar-pequeno {
+  width: auto;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  background: transparent;
+  color: #ef4444;
+  border: 1px solid #fca5a5;
+  border-radius: 6px;
+  margin-top: 0;
+}
+
+.btn-cancelar-pequeno:hover {
+  background: #fef2f2;
+}
+
+/* Tabuleiro / Mesa de Dominó na Tela Inicial */
+.mesa-container {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.mesa-titulo {
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #64748b;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+.mesa-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.mesa-meio {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+}
+
+.tabuleiro-domino {
+  flex: 1;
+  height: 95px;
+  background: #15803d; /* Verde feltro de mesa */
+  border: 4px solid #78350f; /* Borda madeira */
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: bold;
+  font-size: 11px;
+  letter-spacing: 1px;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.pedra-decorativa {
+  font-size: 26px;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.assento {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 6px 10px;
+  min-width: 105px;
+  max-width: 130px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 13px;
+  word-break: break-word;
+}
+
+.tag-dupla {
+  font-size: 10px;
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+/* Cores distintas para diferenciar as duas duplas na mesa */
+.dupla-1-tag {
+  border: 2px solid #2563eb;
+}
+.dupla-1-tag .tag-dupla {
+  color: #2563eb;
+}
+
+.dupla-2-tag {
+  border: 2px solid #d97706;
+}
+.dupla-2-tag .tag-dupla {
+  color: #d97706;
+}
