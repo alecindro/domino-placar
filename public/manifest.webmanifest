@@ -1,0 +1,17 @@
+{
+  "name": "Placar de Dominó",
+  "short_name": "Dominó",
+  "theme_color": "#15803d",
+  "background_color": "#f1f5f9",
+  "display": "standalone",
+  "scope": "./",
+  "start_url": "./",
+  "icons": [
+    {
+      "src": "icon-domino.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

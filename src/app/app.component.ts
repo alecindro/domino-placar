@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { toBlob } from 'html-to-image';
@@ -35,12 +35,77 @@ export class AppComponent implements OnInit {
   pontosRodadaDupla1: number | null = null;
   pontosRodadaDupla2: number | null = null;
 
+  // Controle de Instalação (PWA / Atalho na Tela Inicial)
+  eventoInstalacao: any = null;
+  mostrarBotaoInstalar = false;
+  ehIOS = false;
+  ehAndroid = false;
+  mostrarInstrucaoInstalacao = false;
+
   constructor(private storage: StorageService) {}
 
   ngOnInit(): void {
     // Restaura a partida em andamento e o histórico ao iniciar o app
+     this.verificarSuporteInstalacao();
     this.partida = this.storage.carregarPartidaAtual();
     this.historicoPartidas = this.storage.carregarHistorico();
+  }
+
+
+
+  @HostListener('window:beforeinstallprompt', ['$event'])
+  onBeforeInstallPrompt(event: Event) {
+    event.preventDefault();
+    this.eventoInstalacao = event;
+    this.mostrarBotaoInstalar = true;
+  }
+
+  @HostListener('window:appinstalled')
+  onAppInstalled() {
+    this.mostrarBotaoInstalar = false;
+    this.mostrarInstrucaoInstalacao = false;
+    this.eventoInstalacao = null;
+  }
+
+  verificarSuporteInstalacao() {
+    // Se já estiver rodando como aplicativo instalado (tela cheia), oculta o botão
+    const jaInstalado =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as any).standalone === true;
+
+    if (jaInstalado) {
+      this.mostrarBotaoInstalar = false;
+      return;
+    }
+
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    this.ehIOS = /iphone|ipad|ipod/.test(userAgent);
+    this.ehAndroid = /android/.test(userAgent);
+
+    // Exibe o botão tanto no Android quanto no iOS
+    if (this.ehIOS || this.ehAndroid) {
+      this.mostrarBotaoInstalar = true;
+    }
+  }
+
+  async instalarApp() {
+    // 1. Se o navegador Android/Chrome liberou a instalação direta em 1 clique:
+    if (this.eventoInstalacao) {
+      this.eventoInstalacao.prompt();
+      const { outcome } = await this.eventoInstalacao.userChoice;
+      if (outcome === 'accepted') {
+        this.mostrarBotaoInstalar = false;
+      }
+      this.eventoInstalacao = null;
+      return;
+    }
+
+    // 2. Se for iPhone ou teste via IP local (HTTP) no Android, mostra o passo a passo:
+    this.mostrarInstrucaoInstalacao = true;
+  }
+
+  fecharInstrucaoInstalacao() {
+    this.mostrarInstrucaoInstalacao = false;
   }
 
   abrirModalSaida() {
@@ -134,6 +199,11 @@ this.mostrarModalSaida = false;
   limparHistorico() {
     this.storage.limparHistorico();
     this.historicoPartidas = [];
+  }
+
+   abrirHistorico() {
+    this.historicoPartidas = this.storage.carregarHistorico();
+    this.mostrarHistorico = true;
   }
 
     desfazerUltimaRodada() {
